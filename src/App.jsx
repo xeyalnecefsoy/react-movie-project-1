@@ -27,8 +27,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
-  useDebounce(() => (searchTerm), 500, [searchTerm]);
-
+  // Debounced dəyişən təyin edilir
+  useDebounce(() => {
+    setDebouncedSearchTerm(searchTerm); // Burada debouncedSearchTerm-ə yenilik əlavə olunur
+  }, 500, [searchTerm]);
 
   const fetchMovies = async (query = '') => {
     setIsLoading(true);
@@ -46,6 +48,11 @@ function App() {
       }
 
       const data = await response.json();
+
+      console.log('Fetched Data:', data); // Burada serverdən gələn cavabı görmək üçün
+      if (!data) {
+        throw new Error('No data returned');
+      }
 
       if (data.response === 'False') {
         setErrorMessage(data.Error || 'Failed to fetch movies');
@@ -67,7 +74,6 @@ function App() {
     }
 }
 
-
   const loadTrendingMovies = async () => {
     try {
       const movies = await getTrendingMovies();
@@ -80,14 +86,11 @@ function App() {
 
   useEffect(() => {
     fetchMovies(debouncedSearchTerm);
-}, [debouncedSearchTerm]); // Burada debouncedSearchTerm istifadə et
-
+  }, [debouncedSearchTerm]); // Burada debouncedSearchTerm istifadə et
   
   useEffect(() => {
-  loadTrendingMovies()
-}, []); // Burada trendingMovies-ə doğru məlumatı yükləyirik.
-
-
+    loadTrendingMovies()
+  }, []); // Burada trendingMovies-ə doğru məlumatı yükləyirik.
 
   return (
     <main>
@@ -136,4 +139,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
